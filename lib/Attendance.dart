@@ -21,6 +21,12 @@ class _MyHomePageState extends State<MyHomePage> {
   double startHour = 7;
   double endHour = 20;
   DateTime date = DateTime.now();
+  DateTime now = new DateTime.now();
+  TimeOfDay initial = TimeOfDay(hour: 0, minute: 0);
+  TimeOfDay from = TimeOfDay(hour: 0, minute: 0);
+  TimeOfDay till = TimeOfDay(hour: 0, minute: 0);
+  DateTime from_dt;
+  DateTime till_dt;
 
   createMeeting() {
     print('pressed');
@@ -71,18 +77,28 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 onSelected: (value) {
                   if (value == 1) {
-                    setState(() {
-                      appointments.add(Meeting(
-                          from: date,
-                          to: date.add(const Duration(hours: 10)),
-                          title: 'General Meeting1',
-                          isAllDay: false,
-                          background: Colors.red,
-                          fromZone: '',
-                          toZone: '',
-                          recurrenceRule: '',
-                          exceptionDates: null
-                      ));
+                    setState(() async{
+                      from = await _selectTime(context);
+                      initial = from;
+                      from_dt = new DateTime(now.year, now.month, now.day, from.hour, from.minute);
+                      till = await _selectTime(context);
+                      till_dt = new DateTime(now.year, now.month, now.day, till.hour, till.minute);
+                      /*print("reached here");
+                      print(from);
+                      print(till);*/
+                      setState(() {
+                        appointments.add(Meeting(
+                            from: from_dt,
+                            to: till_dt,
+                            title: 'Class',
+                            isAllDay: false,
+                            background: Colors.pink,
+                            fromZone: '',
+                            toZone: '',
+                            recurrenceRule: '',
+                            exceptionDates: null
+                        ));
+                      });
                     });
                   }
                   else if (value == 2) {
@@ -114,9 +130,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           exceptionDates: null
                       ));
                     });
-                  }
-                  //_service.call(number);
-                },
+                  }//_service.call(number);
+                 },
               ),
         ],
       ),
@@ -135,7 +150,38 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+
+  Future<TimeOfDay> _selectTime(BuildContext context) async {
+    final TimeOfDay picked_s = await showTimePicker(
+        context: context,
+        initialTime: initial, builder: (BuildContext context, Widget child) {
+      return MediaQuery(
+        data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+        child: child,
+        );
+        }
+      );
+    return picked_s;
+
+    /*if (picked_s != null && picked_s != selectedTime )
+      setState(() {
+        //selectedTime = picked_s;
+        return picked_s;
+      });*/
+  }
+
 }
+
+
+/*void calendarTapped(CalendarTapDetails calendarTapDetails) {
+  if (calendarTapDetails.targetElement == CalendarElement.appointment) {
+    Appointment appointment = calendarTapDetails.appointments[0];
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SecondRoute(appointment:appointment)),
+    );
+  }
+}*/
 
 /*MeetingDataSource _getCalendarDataSource() {
   appointments.add(Meeting(
