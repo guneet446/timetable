@@ -18,6 +18,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  double startHour = 7;
+  double endHour = 20;
+  DateTime date = DateTime.now();
+
   createMeeting() {
     print('pressed');
     /*setState(() {
@@ -67,31 +71,63 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 onSelected: (value) {
                   if (value == 1) {
-                    appointments.add(Meeting(
-                        from: date,
-                        to: date.add(const Duration(hours: 1)),
-                        title: 'General Meeting',
-                        isAllDay: false,
-                        background: Colors.red,
-                        fromZone: '',
-                        toZone: '',
-                        recurrenceRule: '',
-                        exceptionDates: null
-                    ));
+                    setState(() {
+                      appointments.add(Meeting(
+                          from: date,
+                          to: date.add(const Duration(hours: 10)),
+                          title: 'General Meeting1',
+                          isAllDay: false,
+                          background: Colors.red,
+                          fromZone: '',
+                          toZone: '',
+                          recurrenceRule: '',
+                          exceptionDates: null
+                      ));
+                    });
                   }
-                  else if (value == 2)
-                    number = '100';
-                  else if (value == 3)
-                    number = '101';
-                  _service.call(number);
+                  else if (value == 2) {
+                    setState(() {
+                      appointments.add(Meeting(
+                          from: date,
+                          to: date.add(const Duration(hours: 9)),
+                          title: 'General Meeting2',
+                          isAllDay: false,
+                          background: Colors.pink,
+                          fromZone: '',
+                          toZone: '',
+                          recurrenceRule: '',
+                          exceptionDates: null
+                      ));
+                    });
+                  }
+                  else if (value == 3) {
+                    setState(() {
+                      appointments.add(Meeting(
+                          from: date,
+                          to: date.add(const Duration(hours: 8)),
+                          title: 'General Meeting3',
+                          isAllDay: false,
+                          background: Colors.green,
+                          fromZone: '',
+                          toZone: '',
+                          recurrenceRule: '',
+                          exceptionDates: null
+                      ));
+                    });
+                  }
+                  //_service.call(number);
                 },
               ),
         ],
       ),
       body: SfCalendar(
         view: CalendarView.week,
+        timeSlotViewSettings: TimeSlotViewSettings(
+          startHour: startHour,
+          endHour: endHour,
+        ),
         firstDayOfWeek: 1,
-        dataSource: _getCalendarDataSource(),
+        dataSource: MeetingDataSource(appointments),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
@@ -101,8 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-DateTime date = DateTime.now();
-MeetingDataSource _getCalendarDataSource() {
+/*MeetingDataSource _getCalendarDataSource() {
   appointments.add(Meeting(
       from: date,
       to: date.add(const Duration(hours: 1)),
@@ -116,4 +151,4 @@ MeetingDataSource _getCalendarDataSource() {
   ));
 
   return MeetingDataSource(appointments);
-}
+}*/
