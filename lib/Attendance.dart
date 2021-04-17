@@ -20,30 +20,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   double startHour = 7;
   double endHour = 20;
-  DateTime date = DateTime.now();
+  DateTime selectedDate = new DateTime.now();
   DateTime now = new DateTime.now();
   TimeOfDay initial = TimeOfDay(hour: 0, minute: 0);
   TimeOfDay from = TimeOfDay(hour: 0, minute: 0);
   TimeOfDay till = TimeOfDay(hour: 0, minute: 0);
   DateTime from_dt;
   DateTime till_dt;
-
-  createMeeting() {
-    print('pressed');
-    /*setState(() {
-      appointments.add(Meeting(
-          from: date.subtract(const Duration(hours: 2)),
-          to: date.subtract(const Duration(hours: 1)),
-          title: 'Custom Meeting',
-          isAllDay: false,
-          background: Colors.blue,
-          fromZone: '',
-          toZone: '',
-          recurrenceRule: '',
-          exceptionDates: null
-      ));
-    });*/
-  }
+  String help;
+  String description;
 
   @override
   Widget build(BuildContext context) {
@@ -75,24 +60,52 @@ class _MyHomePageState extends State<MyHomePage> {
                 onCanceled: () {
                 print("You have canceled the call");
                 },
-                onSelected: (value) {
+                onSelected: (value) async {
                   if (value == 1) {
                     setState(() async{
+                      await _getDescription(context);
+                      help = "From";
                       from = await _selectTime(context);
                       initial = from;
                       from_dt = new DateTime(now.year, now.month, now.day, from.hour, from.minute);
+                      help = "To";
                       till = await _selectTime(context);
                       till_dt = new DateTime(now.year, now.month, now.day, till.hour, till.minute);
-                      /*print("reached here");
-                      print(from);
-                      print(till);*/
+                      initial = TimeOfDay(hour: 0, minute: 0);
                       setState(() {
                         appointments.add(Meeting(
                             from: from_dt,
                             to: till_dt,
-                            title: 'Class',
+                            title: description,
                             isAllDay: false,
                             background: Colors.pink,
+                            fromZone: '',
+                            toZone: '',
+                            recurrenceRule: 'FREQ=DAILY;INTERVAL=7',
+                            exceptionDates: null
+                        ));
+                      });
+                    });
+                  }
+                  else if (value == 2) {
+                    setState(() async{
+                      await _getDescription(context);
+                      await _selectDate(context);
+                      help = "From";
+                      from = await _selectTime(context);
+                      initial = from;
+                      from_dt = new DateTime(selectedDate.year, selectedDate.month, selectedDate.day, from.hour, from.minute);
+                      help = "To";
+                      till = await _selectTime(context);
+                      till_dt = new DateTime(selectedDate.year, selectedDate.month, selectedDate.day, till.hour, till.minute);
+                      initial = TimeOfDay(hour: 0, minute: 0);
+                      setState(() {
+                        appointments.add(Meeting(
+                            from: from_dt,
+                            to: till_dt,
+                            title: description,
+                            isAllDay: false,
+                            background: Colors.blue,
                             fromZone: '',
                             toZone: '',
                             recurrenceRule: '',
@@ -101,36 +114,33 @@ class _MyHomePageState extends State<MyHomePage> {
                       });
                     });
                   }
-                  else if (value == 2) {
-                    setState(() {
-                      appointments.add(Meeting(
-                          from: date,
-                          to: date.add(const Duration(hours: 9)),
-                          title: 'General Meeting2',
-                          isAllDay: false,
-                          background: Colors.pink,
-                          fromZone: '',
-                          toZone: '',
-                          recurrenceRule: '',
-                          exceptionDates: null
-                      ));
+                  else if (value == 3) {
+                    setState(() async{
+                      await _getDescription(context);
+                      await _selectDate(context);
+                      help = "From";
+                      from = await _selectTime(context);
+                      initial = from;
+                      from_dt = new DateTime(selectedDate.year, selectedDate.month, selectedDate.day, from.hour, from.minute);
+                      help = "To";
+                      till = await _selectTime(context);
+                      till_dt = new DateTime(selectedDate.year, selectedDate.month, selectedDate.day, till.hour, till.minute);
+                      initial = TimeOfDay(hour: 0, minute: 0);
+                      setState(() {
+                        appointments.add(Meeting(
+                            from: from_dt,
+                            to: till_dt,
+                            title: description,
+                            isAllDay: false,
+                            background: Colors.green,
+                            fromZone: '',
+                            toZone: '',
+                            recurrenceRule: '',
+                            exceptionDates: null
+                        ));
+                      });
                     });
                   }
-                  else if (value == 3) {
-                    setState(() {
-                      appointments.add(Meeting(
-                          from: date,
-                          to: date.add(const Duration(hours: 8)),
-                          title: 'General Meeting3',
-                          isAllDay: false,
-                          background: Colors.green,
-                          fromZone: '',
-                          toZone: '',
-                          recurrenceRule: '',
-                          exceptionDates: null
-                      ));
-                    });
-                  }//_service.call(number);
                  },
               ),
         ],
@@ -144,16 +154,13 @@ class _MyHomePageState extends State<MyHomePage> {
         firstDayOfWeek: 1,
         dataSource: MeetingDataSource(appointments),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: createMeeting,
-      ),
     );
   }
 
   Future<TimeOfDay> _selectTime(BuildContext context) async {
     final TimeOfDay picked_s = await showTimePicker(
         context: context,
+        helpText: help,
         initialTime: initial, builder: (BuildContext context, Widget child) {
       return MediaQuery(
         data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
@@ -162,39 +169,80 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       );
     return picked_s;
-
-    /*if (picked_s != null && picked_s != selectedTime )
-      setState(() {
-        //selectedTime = picked_s;
-        return picked_s;
-      });*/
   }
 
-}
-
-
-/*void calendarTapped(CalendarTapDetails calendarTapDetails) {
-  if (calendarTapDetails.targetElement == CalendarElement.appointment) {
-    Appointment appointment = calendarTapDetails.appointments[0];
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => SecondRoute(appointment:appointment)),
+  _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2025),
+      initialEntryMode: DatePickerEntryMode.input,
     );
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+      });
   }
-}*/
 
-/*MeetingDataSource _getCalendarDataSource() {
-  appointments.add(Meeting(
-      from: date,
-      to: date.add(const Duration(hours: 1)),
-      title: 'General Meeting',
-      isAllDay: false,
-      background: Colors.red,
-      fromZone: '',
-      toZone: '',
-      recurrenceRule: '',
-      exceptionDates: null
-  ));
+  final myController = TextEditingController();
 
-  return MeetingDataSource(appointments);
-}*/
+  _getDescription(BuildContext context) async{
+    return showDialog(context: context, builder: (context) {
+      return AlertDialog(
+          title: Text("Subject"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: myController,
+                decoration: InputDecoration(
+                    labelText: 'Subject'
+                ),
+                validator: (val) {
+                return val.isEmpty ? 'Enter the subject name' : null;
+                },
+              ),
+              TextButton(
+                onPressed: _setText,
+                child: Text('Submit'),
+              ),
+            ],
+          ),
+      );
+    });
+    /*Container(
+      child: TextFormField(
+      decoration: InputDecoration(
+        labelText: 'Subject'
+      ),
+      validator: (val) {
+        return val.isEmpty ? 'Enter the subject name' : null;
+      },
+      )
+    );*/
+  }
+
+  void _setText() {
+    setState(() {
+      description = myController.text;
+    });
+  }
+
+  createMeeting() {
+    print('pressed');
+    /*setState(() {
+      appointments.add(Meeting(
+          from: date.subtract(const Duration(hours: 2)),
+          to: date.subtract(const Duration(hours: 1)),
+          title: 'Custom Meeting',
+          isAllDay: false,
+          background: Colors.blue,
+          fromZone: '',
+          toZone: '',
+          recurrenceRule: '',
+          exceptionDates: null
+      ));
+    });*/
+  }
+}
