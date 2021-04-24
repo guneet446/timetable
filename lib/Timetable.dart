@@ -7,16 +7,16 @@ import 'MeetingDataSource.dart';
 
 List<Meeting> appointments = <Meeting>[];
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+class Timetable extends StatefulWidget {
+  Timetable({Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _TimetableState createState() => _TimetableState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _TimetableState extends State<Timetable> {
 
   double startHour = 7;
   double endHour = 20;
@@ -153,6 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         firstDayOfWeek: 1,
         dataSource: MeetingDataSource(appointments),
+        onLongPress: _deleteSelected,
       ),
     );
   }
@@ -204,23 +205,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               ),
               TextButton(
-                onPressed: _setText,
+                onPressed:() {
+                  _setText();
+                  Navigator.pop(context);
+                  },
                 child: Text('Submit'),
               ),
             ],
           ),
       );
     });
-    /*Container(
-      child: TextFormField(
-      decoration: InputDecoration(
-        labelText: 'Subject'
-      ),
-      validator: (val) {
-        return val.isEmpty ? 'Enter the subject name' : null;
-      },
-      )
-    );*/
   }
 
   void _setText() {
@@ -244,5 +238,35 @@ class _MyHomePageState extends State<MyHomePage> {
           exceptionDates: null
       ));
     });*/
+  }
+
+  _deleteSelected(CalendarLongPressDetails details) {
+    final Meeting tappedAppointment = details.appointments[0];
+
+    return showDialog(context: context, builder: (context) {
+      return AlertDialog(
+        title: Text('Delete ${tappedAppointment.title}?'),
+
+        actions: <Widget>[
+                new TextButton(
+                    child: new Text('Cancel'),
+                    onPressed: () => Navigator.of(context).pop()
+                ),
+                new TextButton(
+                  child: new Text('Delete'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    //customReminders.remove(customReminder);
+                    appointments.remove(tappedAppointment);
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) =>
+                          Timetable()),
+                    );
+                  },
+                ),
+              ],
+      );
+    });
   }
 }

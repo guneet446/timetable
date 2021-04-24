@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'MeetingDataSource.dart';
 
 class Meeting {
   Meeting(
