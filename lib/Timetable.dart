@@ -28,7 +28,9 @@ class _TimetableState extends State<Timetable> {
   DateTime from_dt;
   DateTime till_dt;
   String help;
-  String description;
+  String title;
+  String subtitle = "lecture";
+  String subject = 'EAD';
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +65,7 @@ class _TimetableState extends State<Timetable> {
                 onSelected: (value) async {
                   if (value == 1) {
                     setState(() async{
-                      await _getDescription(context);
+                      await _getSubject(context);
                       help = "From";
                       from = await _selectTime(context);
                       initial = from;
@@ -76,7 +78,7 @@ class _TimetableState extends State<Timetable> {
                         appointments.add(Meeting(
                             from: from_dt,
                             to: till_dt,
-                            title: description,
+                            title: subject + " " + subtitle,
                             isAllDay: false,
                             background: Colors.pink,
                             fromZone: '',
@@ -89,7 +91,7 @@ class _TimetableState extends State<Timetable> {
                   }
                   else if (value == 2) {
                     setState(() async{
-                      await _getDescription(context);
+                      await _getSubject(context);
                       await _selectDate(context);
                       help = "From";
                       from = await _selectTime(context);
@@ -103,7 +105,7 @@ class _TimetableState extends State<Timetable> {
                         appointments.add(Meeting(
                             from: from_dt,
                             to: till_dt,
-                            title: description,
+                            title: subject + " " + subtitle,
                             isAllDay: false,
                             background: Colors.blue,
                             fromZone: '',
@@ -116,7 +118,7 @@ class _TimetableState extends State<Timetable> {
                   }
                   else if (value == 3) {
                     setState(() async{
-                      await _getDescription(context);
+                      await _getTitle(context);
                       await _selectDate(context);
                       help = "From";
                       from = await _selectTime(context);
@@ -130,7 +132,7 @@ class _TimetableState extends State<Timetable> {
                         appointments.add(Meeting(
                             from: from_dt,
                             to: till_dt,
-                            title: description,
+                            title: title,
                             isAllDay: false,
                             background: Colors.green,
                             fromZone: '',
@@ -186,9 +188,79 @@ class _TimetableState extends State<Timetable> {
       });
   }
 
+  _getSubject(BuildContext context) {
+    List<String> subjectList = ['Machine Learning', 'Operating Systems', 'Computer Networks', 'DBMS', 'EAD'];
+    List<String> subtitleList = ['lecture', 'tutorial', 'lab'];
+    return showDialog(context: context, builder: (context) {
+      return AlertDialog(
+        title: Text("Subject"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // for dropdown to open in correct direction go to dropdown.dart and set selectedItemOffset to -40
+            DropdownButton<String>(
+              value: subject,
+              icon: const Icon(Icons.arrow_drop_down),
+              iconSize: 24,
+              elevation: 16,
+              style: const TextStyle(color: Colors.deepPurple),
+              underline: Container(
+                height: 2,
+                color: Colors.deepPurpleAccent,
+              ),
+              onChanged: (String newValue) {
+                setState(() {
+                  subject = newValue;
+                });
+                //_setSubject(newValue);
+              },
+              items: subjectList
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+            DropdownButton<String>(
+              value: subtitle,
+              icon: const Icon(Icons.arrow_drop_down),
+              iconSize: 24,
+              elevation: 16,
+              style: const TextStyle(color: Colors.deepPurple),
+              underline: Container(
+                height: 2,
+                color: Colors.deepPurpleAccent,
+              ),
+              onChanged: (String newValue) {
+                setState(() {
+                  subtitle = newValue;
+                });
+                //_setSubject(newValue);
+              },
+              items: subtitleList
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+            TextButton(
+              onPressed:() {
+                Navigator.pop(context);
+              },
+              child: Text('Submit'),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
   final myController = TextEditingController();
 
-  _getDescription(BuildContext context) async{
+  _getTitle(BuildContext context) {
     return showDialog(context: context, builder: (context) {
       return AlertDialog(
           title: Text("Subject"),
@@ -206,7 +278,7 @@ class _TimetableState extends State<Timetable> {
               ),
               TextButton(
                 onPressed:() {
-                  _setText();
+                  _setTitle();
                   Navigator.pop(context);
                   },
                 child: Text('Submit'),
@@ -217,9 +289,9 @@ class _TimetableState extends State<Timetable> {
     });
   }
 
-  void _setText() {
+  void _setTitle() {
     setState(() {
-      description = myController.text;
+      title = myController.text;
     });
   }
 
