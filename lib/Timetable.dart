@@ -7,6 +7,9 @@ import 'Meeting.dart';
 import 'MeetingDataSource.dart';
 
 List<Meeting> appointments = <Meeting>[];
+List<String> subjectList = ['Machine Learning', 'Operating Systems', 'Computer Networks', 'DBMS', 'EAD'];
+List<String> subtitleList = ['Lecture', 'Tutorial', 'Lab'];
+List<int> colors = [0xffFF9990, 0xff9ED2C0, 0xffC2DEE5, 0xffDCC0EC, 0xffE8C6AE, 0xffB2829D, 0xff55AAB2, 0xffD3D896, 0xffD9B6A9, 0xffABA68E];
 
 class Timetable extends StatefulWidget {
   Timetable({Key key, this.title}) : super(key: key);
@@ -32,7 +35,7 @@ class _TimetableState extends State<Timetable> {
   DateTime till_dt;
   String help;
   String title;
-  String subtitle = "lecture";
+  String subtitle = "Lecture";
   String subject = 'EAD';
 
   @override
@@ -86,7 +89,7 @@ class _TimetableState extends State<Timetable> {
                           to: till_dt,
                           title: subject + " " + subtitle,
                           isAllDay: false,
-                          background: Colors.pink,
+                          background: Color(colors[subjectList.indexOf(subject)]),
                           fromZone: '',
                           toZone: '',
                           recurrenceRule: 'FREQ=DAILY;INTERVAL=7',
@@ -237,8 +240,6 @@ class _TimetableState extends State<Timetable> {
   }
 
   getSubject(BuildContext context) {
-    List<String> subjectList = ['Machine Learning', 'Operating Systems', 'Computer Networks', 'DBMS', 'EAD'];
-    List<String> subtitleList = ['lecture', 'tutorial', 'lab'];
     return showDialog(context: context, builder: (context) {
       return AlertDialog(
         title: Text("Subject"),
