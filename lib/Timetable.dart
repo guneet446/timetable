@@ -9,7 +9,7 @@ import 'MeetingDataSource.dart';
 List<Meeting> appointments = <Meeting>[];
 List<String> subjectList = ['Machine Learning', 'Operating Systems', 'Computer Networks', 'DBMS', 'EAD'];
 List<String> subtitleList = ['Lecture', 'Tutorial', 'Lab'];
-List<int> colors = [0xffFF9990, 0xff9ED2C0, 0xffC2DEE5, 0xffDCC0EC, 0xffE8C6AE, 0xffB2829D, 0xff55AAB2, 0xffD3D896, 0xffD9B6A9, 0xffABA68E];
+List<int> colors = [0xffFF9990, 0xff9ED2C0, 0xffC2DEE5, 0xffDCC0EC, 0xffE8C6AE, 0xffB2829D, 0xff55AAB2, 0xffABA68E, 0xffD3D896, 0xffD9B6A9];
 
 class Timetable extends StatefulWidget {
   Timetable({Key key, this.title}) : super(key: key);
@@ -114,7 +114,7 @@ class _TimetableState extends State<Timetable> {
                           to: till_dt,
                           title: subject + " " + subtitle,
                           isAllDay: false,
-                          background: Colors.blue,
+                          background: Color(0xffD3D896),
                           fromZone: '',
                           toZone: '',
                           recurrenceRule: '',
@@ -139,7 +139,7 @@ class _TimetableState extends State<Timetable> {
                           to: till_dt,
                           title: title,
                           isAllDay: false,
-                          background: Colors.green,
+                          background: Color(0xffD9B6A9),
                           fromZone: '',
                           toZone: '',
                           recurrenceRule: '',
@@ -153,9 +153,14 @@ class _TimetableState extends State<Timetable> {
       ),
       body: SfCalendar(
         view: CalendarView.week,
+        allowedViews: [
+          CalendarView.day,
+          CalendarView.week
+        ],
         timeSlotViewSettings: TimeSlotViewSettings(
           startHour: startHour,
           endHour: endHour,
+          timeIntervalHeight: 45,
         ),
         firstDayOfWeek: 1,
         dataSource: MeetingDataSource(appointments),
