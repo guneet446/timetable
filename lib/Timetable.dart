@@ -19,8 +19,8 @@ class Timetable extends StatefulWidget {
 
 class _TimetableState extends State<Timetable> {
 
-  double startHour = 7;
-  double endHour = 20;
+  double startHour = 6;
+  double endHour = 22;
   DateTime selectedDate = new DateTime.now();
   int selectedDay;
   DateTime now = new DateTime.now();
@@ -39,7 +39,8 @@ class _TimetableState extends State<Timetable> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Timetable"),
+        title: Text("Timetable", style: TextStyle( color: Color(0xffCADBE4), fontSize: 32,),),
+        backgroundColor: Color(0xff588297),
         actions: [
           PopupMenuButton(
                 child: Padding(
@@ -165,10 +166,21 @@ class _TimetableState extends State<Timetable> {
         context: context,
         helpText: help,
         initialTime: initial, builder: (BuildContext context, Widget child) {
-      return MediaQuery(
+      /*return MediaQuery(
         data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
         child: child,
-        );
+        );*/
+      return Theme(
+        data: ThemeData.light().copyWith(
+          primaryColor: Color(0xff588297),
+          accentColor: Color(0xffE28F22),
+          colorScheme: ColorScheme.light(primary: Color(0xff235790),),
+          buttonTheme: ButtonThemeData(
+              textTheme: ButtonTextTheme.primary
+          ),
+        ),
+        child: child,
+      );
         }
       );
     return picked_s;
@@ -180,7 +192,20 @@ class _TimetableState extends State<Timetable> {
       initialDate: selectedDate,
       firstDate: DateTime(2020),
       lastDate: DateTime(2025),
-      initialEntryMode: DatePickerEntryMode.input,
+      initialEntryMode: DatePickerEntryMode.calendar,
+      builder: (BuildContext context, Widget child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: Color(0xff588297),
+            accentColor: Color(0xffE28F22),
+            colorScheme: ColorScheme.light(primary: Color(0xff235790),),
+            buttonTheme: ButtonThemeData(
+                textTheme: ButtonTextTheme.primary
+            ),
+          ),
+          child: child,
+        );
+      },
     );
     if (picked != null && picked != selectedDate)
       setState(() {
@@ -194,6 +219,10 @@ class _TimetableState extends State<Timetable> {
     final values = List.filled(7, true);
     return showDialog(context: context, builder: (context) {
       return WeekdaySelector(
+        color: Color(0xff235790),
+        fillColor: Color(0xff235790),
+        selectedFillColor: Color(0xff235790),
+        //textStyle: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
         onChanged: (int day) {
           setState(() {
             selectedDay = day;
@@ -222,10 +251,9 @@ class _TimetableState extends State<Timetable> {
               icon: const Icon(Icons.arrow_drop_down),
               iconSize: 24,
               elevation: 16,
-              style: const TextStyle(color: Colors.deepPurple),
               underline: Container(
                 height: 2,
-                color: Colors.deepPurpleAccent,
+                color: Color(0xffE28F22),
               ),
               onChanged: (String newValue) {
                 setState(() {
@@ -247,10 +275,9 @@ class _TimetableState extends State<Timetable> {
               icon: const Icon(Icons.arrow_drop_down),
               iconSize: 24,
               elevation: 16,
-              style: const TextStyle(color: Colors.deepPurple),
               underline: Container(
                 height: 2,
-                color: Colors.deepPurpleAccent,
+                  color: Color(0xffE28F22),
               ),
               onChanged: (String newValue) {
                 setState(() {
@@ -270,7 +297,7 @@ class _TimetableState extends State<Timetable> {
               onPressed:() {
                 Navigator.pop(context);
               },
-              child: Text('Submit'),
+              child: Text('Submit', style: TextStyle(color: Color(0xff235790), fontSize: 16)),
             ),
           ],
         ),
@@ -323,11 +350,11 @@ class _TimetableState extends State<Timetable> {
         title: Text('Delete ${tappedAppointment.title}?'),
         actions: <Widget>[
                 new TextButton(
-                    child: new Text('Cancel'),
+                    child: new Text('Cancel', style: TextStyle(color: Color(0xff235790), fontSize: 16)),
                     onPressed: () => Navigator.of(context).pop()
                 ),
                 new TextButton(
-                  child: new Text('Delete'),
+                  child: new Text('Delete', style: TextStyle(color: Color(0xff235790), fontSize: 16)),
                   onPressed: () {
                     Navigator.of(context).pop();
                     //customReminders.remove(customReminder);
