@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:weekday_selector/weekday_selector.dart';
 
 import 'Meeting.dart';
 import 'MeetingDataSource.dart';
@@ -21,7 +22,9 @@ class _TimetableState extends State<Timetable> {
   double startHour = 7;
   double endHour = 20;
   DateTime selectedDate = new DateTime.now();
+  int selectedDay;
   DateTime now = new DateTime.now();
+  DateTime firstDateOfWeek;
   TimeOfDay initial = TimeOfDay(hour: 0, minute: 0);
   TimeOfDay from = TimeOfDay(hour: 0, minute: 0);
   TimeOfDay till = TimeOfDay(hour: 0, minute: 0);
@@ -64,83 +67,80 @@ class _TimetableState extends State<Timetable> {
                 },
                 onSelected: (value) async {
                   if (value == 1) {
-                    setState(() async{
-                      await _getSubject(context);
-                      help = "From";
-                      from = await _selectTime(context);
-                      initial = from;
-                      from_dt = new DateTime(now.year, now.month, now.day, from.hour, from.minute);
-                      help = "To";
-                      till = await _selectTime(context);
-                      till_dt = new DateTime(now.year, now.month, now.day, till.hour, till.minute);
-                      initial = TimeOfDay(hour: 0, minute: 0);
-                      setState(() {
-                        appointments.add(Meeting(
-                            from: from_dt,
-                            to: till_dt,
-                            title: subject + " " + subtitle,
-                            isAllDay: false,
-                            background: Colors.pink,
-                            fromZone: '',
-                            toZone: '',
-                            recurrenceRule: 'FREQ=DAILY;INTERVAL=7',
-                            exceptionDates: null
-                        ));
-                      });
+                    await getSubject(context);
+                    await selectDay();
+                    print(selectedDay);
+                    selectedDate = firstDateOfWeek.add(Duration(days: (selectedDay - 1)));
+                    help = "From";
+                    from = await selectTime(context);
+                    initial = from;
+                    from_dt = new DateTime(selectedDate.year, selectedDate.month, selectedDate.day, from.hour, from.minute);
+                    help = "To";
+                    till = await selectTime(context);
+                    till_dt = new DateTime(selectedDate.year, selectedDate.month, selectedDate.day, till.hour, till.minute);
+                    initial = TimeOfDay(hour: 0, minute: 0);
+                    setState(() {
+                      appointments.add(Meeting(
+                          from: from_dt,
+                          to: till_dt,
+                          title: subject + " " + subtitle,
+                          isAllDay: false,
+                          background: Colors.pink,
+                          fromZone: '',
+                          toZone: '',
+                          recurrenceRule: 'FREQ=DAILY;INTERVAL=7',
+                          exceptionDates: null
+                      ));
                     });
                   }
                   else if (value == 2) {
-                    setState(() async{
-                      await _getSubject(context);
-                      await _selectDate(context);
-                      help = "From";
-                      from = await _selectTime(context);
-                      initial = from;
-                      from_dt = new DateTime(selectedDate.year, selectedDate.month, selectedDate.day, from.hour, from.minute);
-                      help = "To";
-                      till = await _selectTime(context);
-                      till_dt = new DateTime(selectedDate.year, selectedDate.month, selectedDate.day, till.hour, till.minute);
-                      initial = TimeOfDay(hour: 0, minute: 0);
-                      setState(() {
-                        appointments.add(Meeting(
-                            from: from_dt,
-                            to: till_dt,
-                            title: subject + " " + subtitle,
-                            isAllDay: false,
-                            background: Colors.blue,
-                            fromZone: '',
-                            toZone: '',
-                            recurrenceRule: '',
-                            exceptionDates: null
-                        ));
-                      });
+                    await getSubject(context);
+                    await selectDate(context);
+                    help = "From";
+                    from = await selectTime(context);
+                    initial = from;
+                    from_dt = new DateTime(selectedDate.year, selectedDate.month, selectedDate.day, from.hour, from.minute);
+                    help = "To";
+                    till = await selectTime(context);
+                    till_dt = new DateTime(selectedDate.year, selectedDate.month, selectedDate.day, till.hour, till.minute);
+                    initial = TimeOfDay(hour: 0, minute: 0);
+                    setState(() {
+                      appointments.add(Meeting(
+                          from: from_dt,
+                          to: till_dt,
+                          title: subject + " " + subtitle,
+                          isAllDay: false,
+                          background: Colors.blue,
+                          fromZone: '',
+                          toZone: '',
+                          recurrenceRule: '',
+                          exceptionDates: null
+                      ));
                     });
                   }
                   else if (value == 3) {
-                    setState(() async{
-                      await _getTitle(context);
-                      await _selectDate(context);
-                      help = "From";
-                      from = await _selectTime(context);
-                      initial = from;
-                      from_dt = new DateTime(selectedDate.year, selectedDate.month, selectedDate.day, from.hour, from.minute);
-                      help = "To";
-                      till = await _selectTime(context);
-                      till_dt = new DateTime(selectedDate.year, selectedDate.month, selectedDate.day, till.hour, till.minute);
-                      initial = TimeOfDay(hour: 0, minute: 0);
-                      setState(() {
-                        appointments.add(Meeting(
-                            from: from_dt,
-                            to: till_dt,
-                            title: title,
-                            isAllDay: false,
-                            background: Colors.green,
-                            fromZone: '',
-                            toZone: '',
-                            recurrenceRule: '',
-                            exceptionDates: null
-                        ));
-                      });
+                    await getTitle(context);
+                    await selectDate(context);
+                    help = "From";
+                    from = await selectTime(context);
+                    initial = from;
+                    from_dt = new DateTime(selectedDate.year, selectedDate.month, selectedDate.day, from.hour, from.minute);
+                    help = "To";
+                    till = await selectTime(context);
+                    till_dt = new DateTime(selectedDate.year, selectedDate.month, selectedDate.day, till.hour, till.minute);
+                    initial = TimeOfDay(hour: 0, minute: 0);
+                    setState(() {
+                      appointments.add(Meeting(
+                          from: from_dt,
+                          to: till_dt,
+                          title: title,
+                          isAllDay: false,
+                          background: Colors.green,
+                          fromZone: '',
+                          toZone: '',
+                          recurrenceRule: '',
+                          exceptionDates: null
+                      ));
                     });
                   }
                  },
@@ -155,12 +155,12 @@ class _TimetableState extends State<Timetable> {
         ),
         firstDayOfWeek: 1,
         dataSource: MeetingDataSource(appointments),
-        onLongPress: _deleteSelected,
+        onLongPress: deleteSelected,
       ),
     );
   }
 
-  Future<TimeOfDay> _selectTime(BuildContext context) async {
+  Future<TimeOfDay> selectTime(BuildContext context) async {
     final TimeOfDay picked_s = await showTimePicker(
         context: context,
         helpText: help,
@@ -174,7 +174,7 @@ class _TimetableState extends State<Timetable> {
     return picked_s;
   }
 
-  _selectDate(BuildContext context) async {
+  selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
       initialDate: selectedDate,
@@ -188,7 +188,26 @@ class _TimetableState extends State<Timetable> {
       });
   }
 
-  _getSubject(BuildContext context) {
+  selectDay() {
+    firstDateOfWeek = now.subtract(Duration(days: now.weekday - 1));
+    print(firstDateOfWeek);
+    final values = List.filled(7, true);
+    return showDialog(context: context, builder: (context) {
+      return WeekdaySelector(
+        onChanged: (int day) {
+          setState(() {
+            selectedDay = day;
+            final index = day % 7;
+            values[index] = !values[index];
+            Navigator.pop(context);
+          });
+        },
+        values: values,
+      );
+    },);
+  }
+
+  getSubject(BuildContext context) {
     List<String> subjectList = ['Machine Learning', 'Operating Systems', 'Computer Networks', 'DBMS', 'EAD'];
     List<String> subtitleList = ['lecture', 'tutorial', 'lab'];
     return showDialog(context: context, builder: (context) {
@@ -222,6 +241,7 @@ class _TimetableState extends State<Timetable> {
                 );
               }).toList(),
             ),
+
             DropdownButton<String>(
               value: subtitle,
               icon: const Icon(Icons.arrow_drop_down),
@@ -260,7 +280,7 @@ class _TimetableState extends State<Timetable> {
 
   final myController = TextEditingController();
 
-  _getTitle(BuildContext context) {
+  getTitle(BuildContext context) {
     return showDialog(context: context, builder: (context) {
       return AlertDialog(
           title: Text("Subject"),
@@ -278,7 +298,7 @@ class _TimetableState extends State<Timetable> {
               ),
               TextButton(
                 onPressed:() {
-                  _setTitle();
+                  setTitle();
                   Navigator.pop(context);
                   },
                 child: Text('Submit'),
@@ -289,36 +309,18 @@ class _TimetableState extends State<Timetable> {
     });
   }
 
-  void _setTitle() {
+  void setTitle() {
     setState(() {
       title = myController.text;
     });
   }
 
-  createMeeting() {
-    print('pressed');
-    /*setState(() {
-      appointments.add(Meeting(
-          from: date.subtract(const Duration(hours: 2)),
-          to: date.subtract(const Duration(hours: 1)),
-          title: 'Custom Meeting',
-          isAllDay: false,
-          background: Colors.blue,
-          fromZone: '',
-          toZone: '',
-          recurrenceRule: '',
-          exceptionDates: null
-      ));
-    });*/
-  }
-
-  _deleteSelected(CalendarLongPressDetails details) {
+  deleteSelected(CalendarLongPressDetails details) {
     final Meeting tappedAppointment = details.appointments[0];
 
     return showDialog(context: context, builder: (context) {
       return AlertDialog(
         title: Text('Delete ${tappedAppointment.title}?'),
-
         actions: <Widget>[
                 new TextButton(
                     child: new Text('Cancel'),
